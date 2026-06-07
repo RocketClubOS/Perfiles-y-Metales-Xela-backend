@@ -1,0 +1,30 @@
+id,familia,forma,acabado,medida_1,medida_2,medida_normalizada,unidad,grueso,categoria,stock,precio_venta,aliases
+1,TUBO,CUADRADO,NEGRO,1/2,,1/2,PULGADA,CH 20,TUBERIA,937,28,tubo cuadrado media|tubo negro cuadrado media|tubo de media|tubo 1/2|cuadrado 1/2|media ch20|ch20|chapa 20|calibre 20
+2,TUBO,CUADRADO,NEGRO,1,,1,PULGADA,CH 20,TUBERIA,659,48,tubo cuadrado 1|tubo negro cuadrado 1|tubo de una pulgada|cuadrado 1|ch20|chapa 20|calibre 20
+3,TUBO,CUADRADO,NEGRO,1-1/2,,1-1/2,PULGADA,CH 18,TUBERIA,18,108,tubo cuadrado 1 1/2|tubo cuadrado 1.5|tubo negro cuadrado 1 1/2|tubo de pulgada y media|cuadrado 1-1/2|ch18|chapa 18|calibre 18
+4,TUBO,CUADRADO,NEGRO,1-1/2,,1-1/2,PULGADA,CH 20,TUBERIA,0,78,tubo cuadrado 1 1/2|tubo cuadrado 1.5|tubo negro cuadrado 1 1/2|tubo de pulgada y media|cuadrado 1-1/2|ch20|chapa 20|calibre 20
+5,TUBO,CUADRADO,NEGRO,2,,2,PULGADA,CH 16,TUBERIA,0,140,tubo cuadrado 2|tubo negro cuadrado 2|tubo de 2|cuadrado 2|ch16|chapa 16|calibre 16
+6,TUBO,CUADRADO,NEGRO,2,,2,PULGADA,CH 18,TUBERIA,0,125,tubo cuadrado 2|tubo negro cuadrado 2|tubo de 2|cuadrado 2|ch18|chapa 18|calibre 18
+7,TUBO,CUADRADO,NEGRO,3,,3,PULGADA,CH 16,TUBERIA,18,225,tubo cuadrado 3|tubo negro cuadrado 3|tubo de 3|cuadrado 3|ch16|chapa 16|calibre 16
+8,TUBO,CUADRADO,NEGRO,3,,3,PULGADA,CH 18,TUBERIA,0,185,tubo cuadrado 3|tubo negro cuadrado 3|tubo de 3|cuadrado 3|ch18|chapa 18|calibre 18
+9,TUBO,CUADRADO,NEGRO,4,,4,PULGADA,CH 16,TUBERIA,123,300,tubo cuadrado 4|tubo negro cuadrado 4|tubo de 4|cuadrado 4|ch16|chapa 16|calibre 16
+10,TUBO,CUADRADO,NEGRO,4,,4,PULGADA,CH 18,TUBERIA,0,0,tubo cuadrado 4|tubo negro cuadrado 4|tubo de 4|cuadrado 4|ch18|chapa 18|calibre 18
+11,TUBO,RECTANGULAR,NEGRO,1-1/2,1,1-1/2X1,PULGADA,CH 18,TUBERIA,0,85,tubo rectangular 1 1/2x1|rectangular 1.5x1|tubo negro rectangular 1-1/2x1|ch18|chapa 18|calibre 18
+12,TUBO,RECTANGULAR,NEGRO,1-1/2,1,1-1/2X1,PULGADA,CH 20,TUBERIA,0,70,tubo rectangular 1 1/2x1|rectangular 1.5x1|tubo negro rectangular 1-1/2x1|ch20|chapa 20|calibre 20
+13,TUBO,RECTANGULAR,NEGRO,2,1,2X1,PULGADA,CH 18,TUBERIA,138,87,tubo rectangular 2x1|rectangular 2x1|tubo negro rectangular 2x1|ch18|chapa 18|calibre 18
+14,TUBO,RECTANGULAR,NEGRO,3,1,3X1,PULGADA,CH 18,TUBERIA,259,140,tubo rectangular 3x1|rectangular 3x1|tubo negro rectangular 3x1|ch18|chapa 18|calibre 18
+15,TUBO,RECTANGULAR,NEGRO,3,2,3X2,PULGADA,CH 18,TUBERIA,211,148,tubo rectangular 3x2|rectangular 3x2|tubo negro rectangular 3x2|ch18|chapa 18|calibre 18
+16,TUBO,RECTANGULAR,NEGRO,4,2,4X2,PULGADA,CH 18,TUBERIA,15,190,tubo rectangular 4x2|rectangular 4x2|tubo negro rectangular 4x2|ch18|chapa 18|calibre 18
+17,TUBO,CUADRADO,GALVANIZADO,2,2,2X2,PULGADA,CH 16,TUBERIA,23,170,tubo galvanizado cuadrado 2x2|tubo cuadrado galvanizado 2x2|galvanizado 2x2|ch16|chapa 16|calibre 16
+18,TUBO,CUADRADO,GALVANIZADO,2,2,2X2,PULGADA,CH 18,TUBERIA,0,135,tubo galvanizado cuadrado 2x2|tubo cuadrado galvanizado 2x2|galvanizado 2x2|ch18|chapa 18|calibre 18
+19,TUBO,CUADRADO,GALVANIZADO,3,3,3X3,PULGADA,CH 16,TUBERIA,6,265,tubo galvanizado cuadrado 3x3|tubo cuadrado galvanizado 3x3|galvanizado 3x3|ch16|chapa 16|calibre 16
+20,TUBO,CUADRADO,GALVANIZADO,3,3,3X3,PULGADA,CH 18,TUBERIA,50,235,tubo galvanizado cuadrado 3x3|tubo cuadrado galvanizado 3x3|galvanizado 3x3|ch18|chapa 18|calibre 18
+21,TUBO,REDONDO PROCESO,,1/2,,1/2,PULGADA,CH 14,REDONDO,0,58,tubo redondo proceso media|tubo proceso media|redondo proceso 1/2|tubo 1/2 proceso|ch14|chapa 14|calibre 14
+22,TUBO,REDONDO PROCESO,,1/2,,1/2,PULGADA,CH 16,REDONDO,98,46,tubo redondo proceso media|tubo proceso media|redondo proceso 1/2|tubo 1/2 proceso|ch16|chapa 16|calibre 16
+23,TUBO,REDONDO PROCESO,,1/2,,1/2,PULGADA,EXACTO,REDONDO,41,60,tubo redondo proceso exacto|tubo proceso exacto|redondo exacto|tubo 1/2 exacto
+24,ANGULAR,,,3/4,,3/4,PULGADA,PLG 1/8,ANGULAR,10,42,angular 3/4|angular tres cuartos|angular 3/4 plg 1/8
+25,ANGULAR,,,1,,1,PULGADA,1/8 COMERCIAL,ANGULAR,105,52,angular 1|angular una pulgada|angular comercial 1|angular 1 pulgada
+26,ANGULAR,,,2,,2,PULGADA,MILIMETRICO,ANGULAR,22,130,angular 2|angular dos pulgadas|angular milimetrico 2
+27,PLANO,,,1/2,,1/2,PULGADA,PLG 1/8,PLANO,958,22,plano 1/2|plano media|plano de media|plano 1/2 plg 1/8
+28,PLANO,,,3/4,,3/4,PULGADA,PLG 3/4,PLANO,494,27.25,plano 3/4|plano tres cuartos|plano 3/4 plg 3/4
+29,PLANO,,,1,,1,PULGADA,PLG 1,PLANO,92,40,plano 1|plano de 1|plano una pulgada|plano 1 pulgada
