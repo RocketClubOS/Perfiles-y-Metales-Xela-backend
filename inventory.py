@@ -71,7 +71,7 @@ def search_product(query):
     results = []
     query_tokens = tokenize(query)
 
-    with open("backend/Products.csv", newline="", encoding="utf-8") as file:
+    with open("Products.csv", newline="", encoding="utf-8") as file:
         reader = csv.DictReader(file)
 
         for row in reader:
