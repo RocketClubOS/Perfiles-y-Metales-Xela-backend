@@ -82,11 +82,11 @@ def preguntar():
 
         return jsonify({"answer": answer})
 
-    except Exception:
+    except Exception as e:
         return jsonify({
-            "answer": "Perdón, Bobby tuvo un problema técnico. Intenta otra vez."
+            "answer": f"ERROR: {str(e)}"
         }), 500
-
+    
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=5000)
