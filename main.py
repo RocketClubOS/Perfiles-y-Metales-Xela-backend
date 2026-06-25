@@ -85,15 +85,6 @@ def enviar_mensaje_messenger(sender_id, texto):
     print("RESPUESTA META:", r.status_code, r.text)
 
 
-@app.route("/webhook", methods=["POST"])
-def messenger_webhook():
-    data = request.get_json()
-
-    print("MENSAJE RECIBIDO:")
-    print(data)
-
-    return "EVENT_RECEIVED", 200
-
 @app.route("/mobile")
 def mobile():
     return send_from_directory(app.static_folder, "mobile.html")
