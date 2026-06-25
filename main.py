@@ -1,5 +1,6 @@
 import os
 import threading
+import requests
 
 from agent import answer_customer
 from club_xela_db import (
@@ -52,17 +53,36 @@ def home():
 from flask import request
 
 VERIFY_TOKEN = "bobby123"
+PAGE_ACCESS_TOKEN = os.getenv("PAGE_ACCESS_TOKEN")
 
-@app.route("/webhook", methods=["GET"])
-def verify_webhook():
-    mode = request.args.get("hub.mode")
-    token = request.args.get("hub.verify_token")
-    challenge = request.args.get("hub.challenge")
+@app.route("/webhook", methods=["POST"])
+def messenger_webhook():
+    data = request.get_json()
+    print("MENSAJE RECIBIDO:")
+    print(data)
 
-    if mode == "subscribe" and token == VERIFY_TOKEN:
-        return challenge, 200
+    for entry in data.get("entry", []):
+        for event in entry.get("messaging", []):
+            sender_id = event.get("sender", {}).get("id")
+            message_text = event.get("message", {}).get("text")
 
-    return "Verification failed", 403
+            if sender_id and message_text:
+                respuesta = answer_customer(message_text)
+                enviar_mensaje_messenger(sender_id, respuesta)
+
+    return "EVENT_RECEIVED", 200
+
+
+def enviar_mensaje_messenger(sender_id, texto):
+    url = f"https://graph.facebook.com/v19.0/me/messages?access_token={PAGE_ACCESS_TOKEN}"
+
+    payload = {
+        "recipient": {"id": sender_id},
+        "message": {"text": texto}
+    }
+
+    r = requests.post(url, json=payload)
+    print("RESPUESTA META:", r.status_code, r.text)
 
 
 @app.route("/webhook", methods=["POST"])
