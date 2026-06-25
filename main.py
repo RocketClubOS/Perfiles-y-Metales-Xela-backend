@@ -2,6 +2,12 @@ import os
 import threading
 import requests
 
+from dotenv import load_dotenv
+from flask import Flask, request, jsonify, send_from_directory
+from flask_cors import CORS
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+
 from agent import answer_customer
 from club_xela_db import (
     agregar_compra as db_agregar_compra,
@@ -11,12 +17,13 @@ from club_xela_db import (
     obtener_cliente,
     obtener_movimientos,
 )
-from database import crear_tabla, guardar_conversacion
-from dotenv import load_dotenv
-from flask import Flask, request, jsonify, send_from_directory
-from flask_cors import CORS
-from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address
+from google_memory import (
+    guardar_memoria,
+    guardar_encuesta,
+    guardar_cliente,
+    guardar_reward,
+    guardar_log,
+)
 
 load_dotenv()
 
@@ -27,62 +34,35 @@ CORS(app, origins=[
     "http://localhost:5500",
     "http://192.168.1.156:5500",
     "https://rocketclubos.github.io",
-    "https://rocketclubos.github.io/Perfiles-y-Metales-Xela"
+    "https://rocketclubos.github.io/Perfiles-y-Metales-Xela",
 ])
 
 limiter = Limiter(
     key_func=get_remote_address,
     app=app,
-    default_limits=["100 per hour"]
+    default_limits=["100 per hour"],
 )
 
-crear_tabla()
+VERIFY_TOKEN = os.getenv("VERIFY_TOKEN", "bobby123")
+PAGE_ACCESS_TOKEN = os.getenv("PAGE_ACCESS_TOKEN")
+
+
+def safe_google_call(func, *args, **kwargs):
+    try:
+        func(*args, **kwargs)
+    except Exception as e:
+        print("Error Google Sheets:", e)
 
 
 @app.route("/")
 def home():
     user_agent = request.headers.get("User-Agent", "").lower()
-
     mobile_keywords = ["iphone", "android", "mobile", "ipad"]
 
     if any(word in user_agent for word in mobile_keywords):
         return send_from_directory(app.static_folder, "mobile.html")
 
     return send_from_directory(app.static_folder, "index.html")
-
-from flask import request
-
-VERIFY_TOKEN = "bobby123"
-PAGE_ACCESS_TOKEN = os.getenv("PAGE_ACCESS_TOKEN")
-
-@app.route("/webhook", methods=["POST"])
-def messenger_webhook():
-    data = request.get_json()
-    print("MENSAJE RECIBIDO:")
-    print(data)
-
-    for entry in data.get("entry", []):
-        for event in entry.get("messaging", []):
-            sender_id = event.get("sender", {}).get("id")
-            message_text = event.get("message", {}).get("text")
-
-            if sender_id and message_text:
-                respuesta = answer_customer(message_text)
-                enviar_mensaje_messenger(sender_id, respuesta)
-
-    return "EVENT_RECEIVED", 200
-
-
-def enviar_mensaje_messenger(sender_id, texto):
-    url = f"https://graph.facebook.com/v19.0/me/messages?access_token={PAGE_ACCESS_TOKEN}"
-
-    payload = {
-        "recipient": {"id": sender_id},
-        "message": {"text": texto}
-    }
-
-    r = requests.post(url, json=payload)
-    print("RESPUESTA META:", r.status_code, r.text)
 
 
 @app.route("/mobile")
@@ -105,6 +85,58 @@ def club_xela():
     return send_from_directory(app.static_folder, "rewards.html")
 
 
+@app.route("/webhook", methods=["GET"])
+def verify_webhook():
+    mode = request.args.get("hub.mode")
+    token = request.args.get("hub.verify_token")
+    challenge = request.args.get("hub.challenge")
+
+    if mode == "subscribe" and token == VERIFY_TOKEN:
+        return challenge, 200
+
+    return "Verification failed", 403
+
+
+@app.route("/webhook", methods=["POST"])
+def messenger_webhook():
+    data = request.get_json(silent=True) or {}
+    print("MENSAJE RECIBIDO:")
+    print(data)
+
+    for entry in data.get("entry", []):
+        for event in entry.get("messaging", []):
+            sender_id = event.get("sender", {}).get("id")
+            message_text = event.get("message", {}).get("text")
+
+            if sender_id and message_text:
+                respuesta = answer_customer(message_text)
+                enviar_mensaje_messenger(sender_id, respuesta)
+
+                threading.Thread(
+                    target=safe_google_call,
+                    args=(guardar_memoria, message_text, respuesta, sender_id, "messenger"),
+                    daemon=True,
+                ).start()
+
+    return "EVENT_RECEIVED", 200
+
+
+def enviar_mensaje_messenger(sender_id, texto):
+    if not PAGE_ACCESS_TOKEN:
+        print("PAGE_ACCESS_TOKEN no configurado.")
+        return
+
+    url = f"https://graph.facebook.com/v19.0/me/messages?access_token={PAGE_ACCESS_TOKEN}"
+
+    payload = {
+        "recipient": {"id": sender_id},
+        "message": {"text": texto},
+    }
+
+    r = requests.post(url, json=payload)
+    print("RESPUESTA META:", r.status_code, r.text)
+
+
 @app.route("/api/registro", methods=["POST"])
 def registro_club_xela():
     data = request.get_json(silent=True) or {}
@@ -123,7 +155,7 @@ def registro_club_xela():
         return jsonify({
             "ok": True,
             "message": "La cuenta ya existe. No se duplicó el registro.",
-            "cliente": cliente
+            "cliente": cliente,
         })
 
     cliente = crear_cliente({
@@ -133,10 +165,22 @@ def registro_club_xela():
         "tipo_cliente": data.get("tipo_cliente", ""),
     })
 
+    threading.Thread(
+        target=safe_google_call,
+        args=(guardar_cliente, nombre, telefono, 5),
+        daemon=True,
+    ).start()
+
+    threading.Thread(
+        target=safe_google_call,
+        args=(guardar_reward, telefono, "registro", 5, 5),
+        daemon=True,
+    ).start()
+
     return jsonify({
         "ok": True,
         "message": "Cuenta creada correctamente",
-        "cliente": cliente
+        "cliente": cliente,
     }), 201
 
 
@@ -147,7 +191,7 @@ def saldo_club_xela(telefono):
     if not cliente:
         return jsonify({
             "ok": False,
-            "message": "Cliente no encontrado"
+            "message": "Cliente no encontrado",
         }), 404
 
     return jsonify({
@@ -155,7 +199,7 @@ def saldo_club_xela(telefono):
         "nombre": cliente["nombre"],
         "telefono": cliente["telefono"],
         "saldo": cliente["saldo"],
-        "movimientos": obtener_movimientos(telefono)
+        "movimientos": obtener_movimientos(telefono),
     })
 
 
@@ -166,7 +210,7 @@ def agregar_compra_club_xela():
     if not admin_key or request.headers.get("X-ADMIN-KEY") != admin_key:
         return jsonify({
             "ok": False,
-            "message": "No autorizado"
+            "message": "No autorizado",
         }), 401
 
     data = request.get_json(silent=True) or {}
@@ -194,14 +238,50 @@ def agregar_compra_club_xela():
     if not resultado:
         return jsonify({
             "ok": False,
-            "message": "Cliente no encontrado"
+            "message": "Cliente no encontrado",
         }), 404
+
+    threading.Thread(
+        target=safe_google_call,
+        args=(
+            guardar_reward,
+            telefono,
+            "compra",
+            resultado["saldo_ganado"],
+            resultado["nuevo_saldo"],
+        ),
+        daemon=True,
+    ).start()
 
     return jsonify({
         "ok": True,
         "message": "Compra agregada correctamente",
         "saldo_ganado": resultado["saldo_ganado"],
-        "nuevo_saldo": resultado["nuevo_saldo"]
+        "nuevo_saldo": resultado["nuevo_saldo"],
+    })
+
+
+@app.route("/api/encuesta", methods=["POST"])
+def guardar_customer_service_survey():
+    data = request.get_json(silent=True) or {}
+
+    nombre = str(data.get("nombre", "")).strip()
+    telefono = str(data.get("telefono", "")).strip()
+    rating = data.get("rating", "")
+    comentario = str(data.get("comentario", "")).strip()
+
+    if not nombre:
+        return jsonify({"ok": False, "message": "El nombre es requerido."}), 400
+
+    threading.Thread(
+        target=safe_google_call,
+        args=(guardar_encuesta, nombre, telefono, rating, comentario),
+        daemon=True,
+    ).start()
+
+    return jsonify({
+        "ok": True,
+        "message": "Gracias por tu encuesta.",
     })
 
 
@@ -225,18 +305,24 @@ def preguntar():
         answer = answer_customer(question)
 
         threading.Thread(
-            target=guardar_conversacion,
-            args=(question, answer),
-            daemon=True
+            target=safe_google_call,
+            args=(guardar_memoria, question, answer, "", "web"),
+            daemon=True,
         ).start()
 
         return jsonify({"answer": answer})
 
     except Exception as e:
+        threading.Thread(
+            target=safe_google_call,
+            args=(guardar_log, "preguntar_error", "ERROR", str(e)),
+            daemon=True,
+        ).start()
+
         return jsonify({
-            "answer": f"ERROR: {str(e)}"
+            "answer": f"ERROR: {str(e)}",
         }), 500
-    
+
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=5000)
